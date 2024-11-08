@@ -41,7 +41,7 @@ export async function login(email, password) {
 }
 
 export async function checkToken(token) {
-  const response = await fetch("http://localhost:3000/users/userinfo", {
+  const response = await fetch("http://localhost:3000/users/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
