@@ -1,27 +1,26 @@
-const BASE_URL = "https://tripleten.desarrollointerno.com/";
+const BASE_URL = "https://se-register-api.en.tripleten-services.com/v1";
 
 export async function register(email, password) {
-  try {
-    const response = await fetch("http://localhost:3000/users/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.log("error al registrar", err);
+  const response = await fetch(`${BASE_URL}/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error("Error al registrar");
   }
+
+  const data = await response.json();
+  return data;
 }
 
 export async function login(email, password) {
-  const response = await fetch("http://localhost:3000/users/signin", {
+  const response = await fetch(`${BASE_URL}/signin`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +40,7 @@ export async function login(email, password) {
 }
 
 export async function checkToken(token) {
-  const response = await fetch("http://localhost:3000/users/me", {
+  const response = await fetch(`${BASE_URL}/users/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +48,7 @@ export async function checkToken(token) {
     },
   });
   if (!response.ok) {
-    throw new Error("token inválido");
+    return { error: "token inválido" };
   }
 
   const data = response.json();

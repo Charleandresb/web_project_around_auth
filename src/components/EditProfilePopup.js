@@ -2,14 +2,12 @@ import React from "react";
 import PopupWithForm from "./PopupWithForm";
 import { useState, useEffect, useContext } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import validator from "validator";
+import escapeHTML from "escape-html";
 
 export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   const currentUser = useContext(CurrentUserContext);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  //console.log(name);
-  console.log(currentUser);
 
   useEffect(() => {
     if (currentUser.name !== undefined) {
@@ -29,8 +27,8 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   function handleSubmit(e) {
     e.preventDefault();
     onUpdateUser({
-      name,
-      about: description,
+      name: escapeHTML(name),
+      about: escapeHTML(description),
     });
   }
 
@@ -54,7 +52,6 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         className="popup__input"
         id="name-input"
-        validator={validator}
         required
       />
       <span className="popup__error name-input-error"></span>
@@ -68,7 +65,6 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         className="popup__input"
         id="about-input"
-        validator={validator}
         required
       />
       <span className="popup__error about-input-error"></span>

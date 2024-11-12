@@ -6,23 +6,29 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import Register from "./Register";
+import SuccesRegister from "./SuccesRegister";
+import ErrorRegister from "./ErrorRegister";
 import Login from "./Login";
 import { checkToken } from "../utils/auth";
-import ProtectedRoute from "./ProtectedRoute";
 import api from "../utils/api";
+import ProtectedRoute from "./ProtectedRoute";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { useState, useEffect } from "react";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState(); //pasar a login y a haeder a travez de props
+  const [email, setEmail] = useState("");
   const [cards, setCards] = useState([]);
   const [isEditAvatarPopupOpen, setisEditAvatarPopupOpen] = useState(false);
   const [isEditProfilePopupOpen, setisEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setisAddPlacePopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState({});
   const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+  const [isSuccesRegisterPopupOpen, setisSuccesRegisterPopupOpen] =
+    useState(false);
+  const [isErrorRegisterPopupOpen, setisErrorRegisterPopupOpen] =
+    useState(false);
+  const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const navigate = useNavigate();
 
@@ -31,16 +37,20 @@ function App() {
       const token = localStorage.getItem("jwt");
       if (token) {
         const response = await checkToken(token);
-        console.log(response);
-        if (response.user) {
+        if (response.error) {
+          localStorage.removeItem("jwt");
+          navigate("/login");
+        }
+        if (response.name) {
           setLoggedIn(true);
+          setEmail(response.email);
           navigate("/");
         }
         return;
       }
     }
     reviewToken();
-  }, [loggedIn, navigate]);
+  }, [loggedIn, email, navigate]);
 
   useEffect(() => {
     async function getCards() {
@@ -73,6 +83,14 @@ function App() {
   function handleCardClick(card) {
     setSelectedCard(card);
     setIsImagePopupOpen(true);
+  }
+
+  function handleSuccesRegisterOpen() {
+    setisSuccesRegisterPopupOpen(true);
+  }
+
+  function handleErrorRegisterOpen() {
+    setisErrorRegisterPopupOpen(true);
   }
 
   function handleUpdateUser(userData) {
@@ -110,17 +128,28 @@ function App() {
     });
   }
 
+  function handleCloseSuccesRegister() {
+    closeAllPopups();
+    navigate("/login");
+  }
+
+  function handleCloseErrorRegister() {
+    closeAllPopups();
+  }
+
   function closeAllPopups() {
     setisEditAvatarPopupOpen(false);
     setisEditProfilePopupOpen(false);
     setisAddPlacePopupOpen(false);
     setIsImagePopupOpen(false);
+    setisSuccesRegisterPopupOpen(false);
+    setisErrorRegisterPopupOpen(false);
   }
 
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
+        <Header email={email} />
         <Routes>
           <Route
             path="/"
@@ -166,10 +195,26 @@ function App() {
             }
           />
 
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/register"
+            element={
+              <Register
+                isSuccesRegisterPopupOpen={isSuccesRegisterPopupOpen}
+                handleSuccesRegisterOpen={handleSuccesRegisterOpen}
+                isErrorRegisterPopupOpen={isErrorRegisterPopupOpen}
+                handleErrorRegisterOpen={handleErrorRegisterOpen}
+              />
+            }
+          />
 
           <Route path="/login" element={<Login />} />
         </Routes>
+        {isSuccesRegisterPopupOpen ? (
+          <SuccesRegister onClose={handleCloseSuccesRegister} />
+        ) : null}
+        {isErrorRegisterPopupOpen ? (
+          <ErrorRegister onClose={handleCloseErrorRegister} />
+        ) : null}
         <Footer />
       </CurrentUserContext.Provider>
     </div>

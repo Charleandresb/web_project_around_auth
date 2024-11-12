@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { register } from "../utils/auth";
 
-function Register() {
+function Register(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   function handleChangeEmail(evt) {
     setEmail(evt.target.value);
@@ -17,9 +16,13 @@ function Register() {
 
   async function handleSubmit(evt) {
     evt.preventDefault();
-    const data = await register(email, password);
-    console.log(data);
-    navigate("/login");
+    try {
+      await register(email, password);
+      props.handleSuccesRegisterOpen();
+    } catch (error) {
+      props.handleErrorRegisterOpen();
+      console.log(error);
+    }
   }
 
   return (

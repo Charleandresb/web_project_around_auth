@@ -2,7 +2,7 @@ import logo from "../images/Logo.svg";
 import line from "../images/Line.png";
 import { useNavigate, useMatch } from "react-router-dom";
 
-export default function Header() {
+export default function Header(props) {
   const navigate = useNavigate();
 
   function logout() {
@@ -22,16 +22,22 @@ export default function Header() {
     <header className="header">
       <div className="header__container">
         <img src={logo} alt="Logo" className="header__logo" />
-        {useMatch("/") && (
-          <p className="header__logout" onClick={logout}>
-            Cerrar sesión
-          </p>
-        )}
+        <div className="header__info">
+          {useMatch("/") && <p className="header__email">{props.email}</p>}
+
+          {useMatch("/") && (
+            <p className="header__logout" onClick={logout}>
+              Cerrar sesión
+            </p>
+          )}
+        </div>
+
         {useMatch("/login") && (
           <p className="header__register" onClick={navRegister}>
             Regístrate
           </p>
         )}
+
         {useMatch("/register") && (
           <p className="header__login" onClick={navLogin}>
             Iniciar sesión
