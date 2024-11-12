@@ -41,9 +41,9 @@ function App() {
           localStorage.removeItem("jwt");
           navigate("/login");
         }
-        if (response.name) {
+        if (response.data.email) {
           setLoggedIn(true);
-          setEmail(response.email);
+          setEmail(response.data.email);
           navigate("/");
         }
         return;
@@ -207,7 +207,7 @@ function App() {
             }
           />
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
         </Routes>
         {isSuccesRegisterPopupOpen ? (
           <SuccesRegister onClose={handleCloseSuccesRegister} />

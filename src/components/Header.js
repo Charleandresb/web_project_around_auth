@@ -3,6 +3,9 @@ import line from "../images/Line.png";
 import { useNavigate, useMatch } from "react-router-dom";
 
 export default function Header(props) {
+  const isHome = useMatch("/");
+  const isLogin = useMatch("/login");
+  const isRegister = useMatch("/register");
   const navigate = useNavigate();
 
   function logout() {
@@ -23,22 +26,22 @@ export default function Header(props) {
       <div className="header__container">
         <img src={logo} alt="Logo" className="header__logo" />
         <div className="header__info">
-          {useMatch("/") && <p className="header__email">{props.email}</p>}
+          {isHome && <p className="header__email">{props.email}</p>}
 
-          {useMatch("/") && (
+          {isHome && (
             <p className="header__logout" onClick={logout}>
               Cerrar sesión
             </p>
           )}
         </div>
 
-        {useMatch("/login") && (
+        {isLogin && (
           <p className="header__register" onClick={navRegister}>
             Regístrate
           </p>
         )}
 
-        {useMatch("/register") && (
+        {isRegister && (
           <p className="header__login" onClick={navLogin}>
             Iniciar sesión
           </p>
