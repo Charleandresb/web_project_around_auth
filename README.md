@@ -54,3 +54,15 @@ para evitar el ataque de XSS. El estudio, comprensión e
 implementación de estas reglas aún están en proceso, pronto
 se podrán aplicar correctamente por todo el proyecto para brindar
 una mayor seguridad.
+
+Validación de formularios a través de la librería React Hook Form.
+El hook useForm contiene un registro para los inputs, un manejo
+de errores, un controlador de envío y un resetéo de ser necesario.
+La función yupResolver maneja las reglas para cada una de las
+entradas de los inputs establecidas en sus esquemas correspondientes,
+estas reglas se especifican dentro del objeto yup.object. El mensaje
+de error se renderiza debajo de los inputs.
+
+env:
+REACT_APP_API_TOKEN=607e8388-c5c3-4ce3-b6ce-2c44041903cd
+REACT_APP_API_BASE_URL=https://around.nomoreparties.co/v1/web_es_11

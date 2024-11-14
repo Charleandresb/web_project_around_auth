@@ -1,20 +1,43 @@
-import React, { useRef } from "react";
+import React from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const addPlaceSchema = yup.object({
+  title: yup
+    .string("Completa este campo")
+    .required("Introduce un título")
+    .min(2, "El título debe tener mínimo dos caracteres")
+    .max(20, "El título debe tener máximo veinte caracteres"),
+  link: yup
+    .string("Completa este campo")
+    .url("Introduce una URL")
+    .required("Introduce una URL"),
+});
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  const titleRef = useRef(null);
-  const linkRef = useRef(null);
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({
+    defaultValues: { title: "", link: "" },
+    resolver: yupResolver(addPlaceSchema),
+    mode: "onChange",
+  });
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    onAddPlace({ name: titleRef.current.value, link: linkRef.current.value });
+  function handleSubmitAddPlace(data) {
+    onAddPlace({ name: data.title, link: data.link });
+    reset();
   }
 
   return (
     <PopupWithForm
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleSubmitAddPlace)}
       title="Nuevo lugar"
       name="add"
       buttonText="Crear"
@@ -22,26 +45,24 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
     >
       <input
         type="text"
-        name="title"
-        ref={titleRef}
-        placeholder="Nombre *"
-        maxLength="30"
-        minLength="2"
+        placeholder="Título *"
         className="popup__input"
         id="add-input"
-        required
+        {...register("title")}
       />
-      <span className="popup__error add-input-error"></span>
+      <span className="popup__error add-input-error">
+        {errors.title?.message}
+      </span>
       <input
         type="url"
-        name="link"
-        ref={linkRef}
         placeholder="Imagen URL *"
         className="popup__input"
         id="link-input"
-        required
+        {...register("link")}
       />
-      <span className="popup__error link-input-error"></span>
+      <span className="popup__error link-input-error">
+        {errors.link?.message}
+      </span>
     </PopupWithForm>
   );
 }
